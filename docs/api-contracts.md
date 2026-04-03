@@ -38,7 +38,14 @@ POST /api/v1/auth/login
   "access_token": "string",
   "refresh_token": "string",
   "token_type": "Bearer",
-  "expires_in": 3600
+  "expires_in": 3600,
+  "user": {
+    "id": "string",
+    "full_name": "string",
+    "email": "string",
+    "role": "admin | editor | member",
+    "photo_url": "string | null"
+  }
 }
 ```
 
@@ -69,7 +76,14 @@ POST /api/v1/auth/refresh
   "access_token": "string",
   "refresh_token": "string",
   "token_type": "Bearer",
-  "expires_in": 3600
+  "expires_in": 3600,
+  "user": {
+    "id": "string",
+    "full_name": "string",
+    "email": "string",
+    "role": "admin | editor | member",
+    "photo_url": "string | null"
+  }
 }
 ```
 
@@ -77,6 +91,30 @@ POST /api/v1/auth/refresh
 ```json
 {
   "message": "Invalid or expired refresh token"
+}
+```
+
+---
+
+### Get Current User
+
+```
+GET /api/v1/auth/me
+```
+
+**Headers**
+```
+Authorization: Bearer <access_token>
+```
+
+**Response `200 OK`**
+```json
+{
+  "id": "string",
+  "full_name": "string",
+  "email": "string",
+  "role": "admin | editor | member",
+  "photo_url": "string | null"
 }
 ```
 

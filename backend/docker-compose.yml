@@ -1,0 +1,14 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: membership-mongo
+    ports:
+      - '27018:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: membership
+      MONGO_INITDB_ROOT_PASSWORD: membership123
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

@@ -4,23 +4,59 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A membership management web app (e.g., alumni associations, church groups) with role-based access (Admin, Editor, Member). Frontend-only at this stage — backend/database/file storage are TBD. Auth is currently mocked in `AuthContext` for UI testing.
+A membership management web app (e.g., alumni associations, church groups) with role-based access (Admin, Editor, Member).
 
 ## Commands
 
-All commands run from the `src/frontend/` directory:
-
+### Frontend (`frontend/`)
 ```bash
-cd src/frontend
+cd frontend
 npm run dev      # Start dev server (Vite)
 npm run build    # Production build
 npm run lint     # ESLint
 npm run preview  # Preview production build
 ```
 
+### Backend (`backend/`)
+```bash
+cd backend
+npm run start:dev   # Start NestJS dev server (port 3000)
+npm run seed        # Seed admin user
+npm run test        # Run unit tests
+npm run test:cov    # Run unit tests with coverage report
+docker-compose up -d  # Start MongoDB (port 27018)
+```
+
+### E2E (`/` repo root)
+```bash
+npx playwright test e2e.spec.js   # Run all E2E tests (requires both servers running)
+```
+
+## Testing Requirements
+
+> **Tests are mandatory. Every feature implementation must include passing tests before it is considered done.**
+
+### Unit Tests (Backend)
+- Every service method must have a corresponding test in a co-located `*.spec.ts` file
+- Run with `npm run test` from `backend/`
+- Tests must cover: happy path, permission guards, not-found cases, and validation errors
+- Tests use mocked repositories — no database required
+
+### E2E Tests (Full Stack)
+- Every user-facing flow must be covered by a Playwright test in `e2e.spec.js`
+- Run with `npx playwright test e2e.spec.js` from the repo root
+- Requires both servers running: `backend` on port 3000, `frontend` on port 5173
+- Tests must cover: success flows, error states, access control
+
+### Definition of Done
+A feature is only complete when:
+1. Implementation is working
+2. Backend unit tests pass (`npm run test`)
+3. E2E tests pass (`npx playwright test e2e.spec.js`)
+
 ## Architecture
 
-### Frontend (`src/frontend/`)
+### Frontend (`frontend/`)
 
 - **Framework**: React 18 + Vite, JSX (not TypeScript)
 - **Styling**: Tailwind CSS 3

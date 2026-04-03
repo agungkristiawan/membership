@@ -1,0 +1,18 @@
+{
+  "name": "membership",
+  "version": "1.0.0",
+  "description": "A web-based membership management application for communities such as alumni associations or church groups. Role-based access: Admin, Editor, Member.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  }
+}
