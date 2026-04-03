@@ -100,16 +100,11 @@ Feature: Login
 ```gherkin
 Feature: Password Reset
 
-  Scenario: Member requests a password reset
-    Given I am on the login page
-    When I request a password reset with my email
-    Then I receive a password reset link via email
+  Scenario: Admin generates a password reset link for a member
+    Given I am logged in as an Admin
+    When I generate a password reset link for a member's email
+    Then I receive a reset_url to share with the member manually
     And the link expires after 1 hour
-
-  Scenario: Admin or Editor triggers a password reset on behalf of a member
-    Given I am logged in as an Admin or Editor
-    When I trigger a password reset for a member
-    Then the member receives a password reset link via email
 
   Scenario: Member resets password with a valid link
     Given I have received a valid password reset link

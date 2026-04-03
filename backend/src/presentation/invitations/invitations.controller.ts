@@ -16,7 +16,7 @@ export class InvitationsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Generate an invitation link (admin/editor only)' })
-  @ApiResponse({ status: 201, description: 'Invitation created with invite_url', schema: { example: { invite_url: 'http://localhost:5173/register?token=...' } } })
+  @ApiResponse({ status: 201, description: 'Invitation created', schema: { example: { invitation_link: 'http://localhost:5173/register/abc123', expires_at: '2026-05-04T00:00:00.000Z' } } })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   generate(
     @Body() dto: CreateInvitationDto,

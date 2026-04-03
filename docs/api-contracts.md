@@ -151,6 +151,13 @@ Authorization: Bearer <access_token>
 POST /api/v1/auth/password-reset/request
 ```
 
+> Note: Admin only (authenticated). No email is sent — the reset link is returned directly for the admin to share manually.
+
+**Headers**
+```
+Authorization: Bearer <access_token>
+```
+
 **Request Body**
 ```json
 {
@@ -161,11 +168,23 @@ POST /api/v1/auth/password-reset/request
 **Response `200 OK`**
 ```json
 {
-  "message": "Password reset link sent to email"
+  "reset_url": "string"
 }
 ```
 
-> Note: Can be triggered by the member themselves, or by an Admin/Editor on behalf of a member.
+**Response `403 Forbidden`**
+```json
+{
+  "message": "Only admins can generate reset links"
+}
+```
+
+**Response `404 Not Found`**
+```json
+{
+  "message": "No user found with this email"
+}
+```
 
 ---
 

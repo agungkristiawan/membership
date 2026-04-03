@@ -5,6 +5,7 @@ Documents the endpoints that are currently implemented and live.
 **Base URL:** `http://localhost:3000/api/v1`
 **Format:** `application/json`
 **Auth:** `Authorization: Bearer <access_token>` (where required)
+**Interactive docs:** `http://localhost:3000/api/docs` (Swagger UI)
 
 ---
 
@@ -14,8 +15,8 @@ Documents the endpoints that are currently implemented and live.
 |---|---|
 | Authentication | ✅ Implemented |
 | Invitations | ✅ Implemented |
-| Members | ⏳ Pending |
-| Role Management | ⏳ Pending |
+| Members | ✅ Implemented |
+| Role Management | ✅ Implemented |
 
 ---
 
@@ -84,12 +85,6 @@ Public endpoint. Issues a new access token using a valid refresh token. The old 
 |---|---|---|
 | refresh_token | string | Yes |
 
-```json
-{
-  "refresh_token": "a3f9..."
-}
-```
-
 **Response `200 OK`** — same shape as login response (new tokens + user).
 
 **Error responses**
@@ -115,12 +110,6 @@ Authenticated. Revokes the provided refresh token.
 | Field | Type | Required |
 |---|---|---|
 | refresh_token | string | Yes |
-
-```json
-{
-  "refresh_token": "a3f9..."
-}
-```
 
 **Response `200 OK`**
 
@@ -156,12 +145,110 @@ Authenticated. Returns the profile of the currently logged-in user.
 
 ---
 
+### Change Password
+
+```
+POST /auth/password-change
+```
+
+Authenticated. Changes the password for the currently logged-in user.
+
+**Headers:** `Authorization: Bearer <access_token>`
+
+**Request body**
+
+| Field | Type | Required |
+|---|---|---|
+| current_password | string | Yes |
+| new_password | string (min 6) | Yes |
+
+**Response `200 OK`**
+
+```json
+{
+  "message": "Password changed successfully"
+}
+```
+
+**Error responses**
+
+| Status | Message |
+|---|---|
+| `401` | `Current password is incorrect` |
+
+---
+
+### Request Password Reset (Admin only)
+
+```
+POST /auth/password-reset/request
+```
+
+Authenticated. Admin only. Generates a password reset link for a given user email and returns the link directly (no email is sent — admin shares it manually).
+
+**Headers:** `Authorization: Bearer <access_token>`
+
+**Request body**
+
+| Field | Type | Required |
+|---|---|---|
+| email | string | Yes |
+
+**Response `200 OK`**
+
+```json
+{
+  "reset_url": "http://localhost:5173/reset-password/<token>"
+}
+```
+
+**Error responses**
+
+| Status | Message |
+|---|---|
+| `403` | `Only admins can generate reset links` |
+| `404` | `No user found with this email` |
+
+---
+
+### Confirm Password Reset
+
+```
+POST /auth/password-reset/confirm
+```
+
+Public endpoint. Sets a new password using a valid reset token.
+
+**Request body**
+
+| Field | Type | Required |
+|---|---|---|
+| token | string | Yes |
+| new_password | string (min 6) | Yes |
+
+**Response `200 OK`**
+
+```json
+{
+  "message": "Password reset successfully"
+}
+```
+
+**Error responses**
+
+| Status | Message |
+|---|---|
+| `400` | `Invalid or expired reset token` |
+
+---
+
 ## Token Details
 
 | Token | Expiry | Storage |
 |---|---|---|
 | Access token | 1 hour | `Authorization` header |
 | Refresh token | 7 days | Rotated on every use; old token revoked immediately |
+| Password reset token | 1 hour | Single-use; cleared after successful reset |
 
 ---
 
@@ -184,14 +271,7 @@ Authenticated. Admin or Editor only. Creates a single-use invitation link valid 
 | full_name | string | Yes |
 | email | string | Yes |
 
-```json
-{
-  "full_name": "Jane Smith",
-  "email": "jane@example.com"
-}
-```
-
-**Response `200 OK`**
+**Response `201 Created`**
 
 ```json
 {
@@ -258,20 +338,6 @@ Public endpoint. Completes registration using a valid invitation token. On succe
 | hobbies | string[] | No |
 | notes | string (max 500) | No |
 
-```json
-{
-  "full_name": "Jane Smith",
-  "username": "janesmith",
-  "password": "securepass",
-  "gender": "female",
-  "birthdate": "1992-06-20",
-  "phone": "+1 555 0100",
-  "address": "123 Main St",
-  "hobbies": ["reading", "hiking"],
-  "notes": "Referred by admin."
-}
-```
-
 **Response `201 Created`**
 
 ```json
@@ -298,3 +364,193 @@ Public endpoint. Completes registration using a valid invitation token. On succe
 | `400` | `This invitation link has expired` |
 | `400` | `This invitation link is no longer valid` |
 | `422` | `{ "message": "Validation error", "errors": { "username": "Username already taken" } }` |
+
+---
+
+## Members
+
+### List Members
+
+```
+GET /members?page=1&search=john&status=active
+```
+
+Authenticated. All roles.
+
+**Query parameters**
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| page | integer | No | Page number, defaults to 1 |
+| search | string | No | Search by name or email |
+| status | string | No | Filter: `active` / `inactive` / `pending` |
+
+**Response `200 OK`**
+
+```json
+{
+  "data": [
+    {
+      "id": "string",
+      "full_name": "string",
+      "photo_url": "string | null",
+      "gender": "male | female",
+      "email": "string",
+      "phone": "string",
+      "role": "admin | editor | member",
+      "status": "active | inactive | pending"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 25,
+    "total": 100,
+    "total_pages": 4
+  }
+}
+```
+
+---
+
+### Get Member
+
+```
+GET /members/:id
+```
+
+Authenticated. All roles.
+
+**Response `200 OK`**
+
+```json
+{
+  "id": "string",
+  "full_name": "string",
+  "photo_url": "string | null",
+  "gender": "male | female",
+  "birthdate": "YYYY-MM-DD",
+  "email": "string",
+  "phone": "string",
+  "address": "string",
+  "join_date": "YYYY-MM-DD",
+  "role": "admin | editor | member",
+  "status": "active | inactive | pending",
+  "hobbies": ["string"],
+  "notes": "string"
+}
+```
+
+**Error responses**
+
+| Status | Message |
+|---|---|
+| `404` | `Member not found` |
+
+---
+
+### Update Member
+
+```
+PUT /members/:id
+```
+
+Authenticated. Members can only update their own profile. Admin/Editor can update any profile.
+
+**Request body** — all fields optional
+
+| Field | Type |
+|---|---|
+| full_name | string |
+| gender | `male` \| `female` |
+| birthdate | `YYYY-MM-DD` |
+| phone | string |
+| address | string |
+| hobbies | string[] |
+| notes | string (max 500) |
+| status | `active` \| `inactive` \| `pending` |
+
+**Response `200 OK`** — updated member object
+
+**Error responses**
+
+| Status | Message |
+|---|---|
+| `403` | `You do not have permission to edit this profile` |
+
+---
+
+### Delete Member (Soft Delete)
+
+```
+DELETE /members/:id
+```
+
+Authenticated. Admin/Editor only. Sets `deleted_at` — member can no longer log in but data is retained.
+
+**Response `200 OK`**
+
+```json
+{
+  "message": "Member removed successfully"
+}
+```
+
+**Error responses**
+
+| Status | Message |
+|---|---|
+| `403` | `You cannot remove yourself` |
+| `403` | `You do not have permission to remove members` |
+| `404` | `Member not found` |
+
+---
+
+### Upload Profile Photo
+
+```
+POST /members/:id/photo
+```
+
+Authenticated. `Content-Type: multipart/form-data`. Field name: `photo`. Accepted: JPG, PNG. Max: 2MB.
+
+**Response `201 Created`**
+
+```json
+{
+  "photo_url": "http://localhost:3000/uploads/filename.jpg"
+}
+```
+
+---
+
+## Role Management
+
+### Update Member Role
+
+```
+PUT /members/:id/role
+```
+
+Authenticated. Admin only. Maximum of 4 admins enforced.
+
+**Request body**
+
+| Field | Type | Required |
+|---|---|---|
+| role | `admin` \| `editor` \| `member` | Yes |
+
+**Response `200 OK`**
+
+```json
+{
+  "message": "Role updated successfully"
+}
+```
+
+**Error responses**
+
+| Status | Message |
+|---|---|
+| `400` | `Maximum number of Admins (4) has been reached` |
+| `403` | `Only admins can change roles` |
+| `404` | `Member not found` |

@@ -5,7 +5,7 @@
 | Page | Route | Description |
 |---|---|---|
 | Login | `/login` | Username & password login form |
-| Forgot Password | `/forgot-password` | Enter email to receive reset link |
+| Forgot Password | `/forgot-password` | Static page directing users to contact an admin for a reset link |
 | Reset Password | `/reset-password/:token` | Set new password via reset link |
 | Register | `/register/:token` | Complete profile via invitation link |
 
