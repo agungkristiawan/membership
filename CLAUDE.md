@@ -53,6 +53,7 @@ A feature is only complete when:
 1. Implementation is working
 2. Backend unit tests pass (`npm run test`)
 3. E2E tests pass (`npx playwright test e2e.spec.js`)
+4. Swagger is up to date — new endpoints are documented and any changes to existing endpoints (request/response shape, auth, behavior) are reflected (`@ApiTags`, `@ApiOperation`, `@ApiResponse`, `@ApiBearerAuth` on controllers; `@ApiProperty` on DTOs)
 
 ## Architecture
 
