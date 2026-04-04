@@ -40,10 +40,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid username or password');
     }
 
-    if (user.status === 'inactive') {
-      throw new UnauthorizedException('Your account is inactive');
-    }
-
     return this.issueTokens(user);
   }
 
@@ -58,7 +54,7 @@ export class AuthService {
     await this.refreshTokenRepository.revokeByToken(tokenHash);
 
     const user = await this.userRepository.findById(stored.user_id);
-    if (!user || user.deleted_at || user.status === 'inactive') {
+    if (!user || user.status === 'inactive') {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 

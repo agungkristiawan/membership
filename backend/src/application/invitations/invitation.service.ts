@@ -88,6 +88,19 @@ export class InvitationService {
       });
     }
 
+    const minAge = this.config.get<number>('MEMBER_MIN_AGE', 17);
+    const birthDate = new Date(dto.birthdate);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+    if (age < minAge) {
+      throw new UnprocessableEntityException({
+        message: 'Validation error',
+        errors: { birthdate: `Member must be at least ${minAge} years old` },
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
     const user = await this.userRepository.create({

@@ -6,7 +6,7 @@ import AppLayout from '../layouts/AppLayout'
 import Avatar from '../components/Avatar'
 import Pagination from '../components/Pagination'
 
-const STATUS_OPTIONS = ['', 'active', 'inactive', 'pending']
+const STATUS_OPTIONS = ['', 'active', 'pending']
 
 export default function MemberDirectoryPage() {
   const { user } = useAuth()
@@ -64,7 +64,6 @@ export default function MemberDirectoryPage() {
           className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="">All Statuses</option>
           <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
           <option value="pending">Pending</option>
         </select>
         <button type="submit"
@@ -102,7 +101,6 @@ export default function MemberDirectoryPage() {
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize
                         ${m.status === 'active' ? 'bg-emerald-500 text-white' :
-                          m.status === 'inactive' ? 'bg-slate-400 text-white' :
                           'bg-amber-500 text-white'}`}>
                         {m.status}
                       </span>

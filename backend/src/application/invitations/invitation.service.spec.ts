@@ -35,7 +35,6 @@ const makeUser = (overrides: Partial<User> = {}): User => ({
   hobbies: [],
   created_at: new Date(),
   updated_at: new Date(),
-  deleted_at: null,
   ...overrides,
 });
 
@@ -171,6 +170,28 @@ describe('InvitationService', () => {
       await expect(service.register('valid-token', dto)).rejects.toThrow(
         UnprocessableEntityException,
       );
+    });
+
+    it('throws 422 when birthdate makes member younger than minimum age', async () => {
+      invitationRepo.findByToken.mockResolvedValue(makeInvitation());
+      userRepo.findByUsername.mockResolvedValue(null);
+      const tooYoung = new Date();
+      tooYoung.setFullYear(tooYoung.getFullYear() - 16);
+      const youngDto = { ...dto, birthdate: tooYoung.toISOString().split('T')[0] };
+      await expect(service.register('valid-token', youngDto)).rejects.toThrow(
+        UnprocessableEntityException,
+      );
+    });
+
+    it('accepts birthdate for member exactly at minimum age', async () => {
+      invitationRepo.findByToken.mockResolvedValue(makeInvitation());
+      userRepo.findByUsername.mockResolvedValue(null);
+      userRepo.create.mockResolvedValue(makeUser());
+      const exactAge = new Date();
+      exactAge.setFullYear(exactAge.getFullYear() - 17);
+      const exactDto = { ...dto, birthdate: exactAge.toISOString().split('T')[0] };
+      const result = await service.register('valid-token', exactDto);
+      expect(result.message).toBe('Registration successful');
     });
 
     it('creates user with status=active and marks invitation used', async () => {

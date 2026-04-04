@@ -47,8 +47,6 @@ export class UserSchemaClass {
   @Prop({ required: true, enum: ['admin', 'editor', 'member'], default: 'member' })
   role: string;
 
-  @Prop({ type: Date, default: null })
-  deleted_at?: Date | null;
 
   @Prop({ type: String, default: null })
   password_reset_token?: string | null;
@@ -60,4 +58,3 @@ export class UserSchemaClass {
 export const UserSchema = SchemaFactory.createForClass(UserSchemaClass);
 
 UserSchema.index({ status: 1 });
-UserSchema.index({ deleted_at: 1 });

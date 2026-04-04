@@ -72,7 +72,7 @@ export class MembersController {
 
   @Delete(':id')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Soft-delete a member (admin/editor only)' })
+  @ApiOperation({ summary: 'Remove a member permanently (admin/editor only)' })
   @ApiParam({ name: 'id', description: 'Member ID' })
   @ApiResponse({ status: 200, description: 'Member removed successfully' })
   @ApiResponse({ status: 403, description: 'Insufficient permissions or self-deletion' })

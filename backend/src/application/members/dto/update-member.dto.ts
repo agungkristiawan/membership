@@ -47,8 +47,8 @@ export class UpdateMemberDto {
   @MaxLength(500)
   notes?: string;
 
-  @ApiPropertyOptional({ enum: ['active', 'inactive', 'pending'] })
-  @IsIn(['active', 'inactive', 'pending'])
+  @ApiPropertyOptional({ enum: ['active', 'pending'] })
+  @IsIn(['active', 'pending'])
   @IsOptional()
   status?: string;
 }

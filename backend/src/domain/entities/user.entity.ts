@@ -18,7 +18,7 @@ export interface User {
   notes?: string;
   photo_url?: string;
   role: UserRole;
-  deleted_at?: Date | null;
+
   password_reset_token?: string | null;
   password_reset_expires_at?: Date | null;
   created_at: Date;

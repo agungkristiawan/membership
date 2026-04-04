@@ -5,6 +5,13 @@ import { useAuth } from '../context/AuthContext'
 import AuthLayout from '../layouts/AuthLayout'
 import TagInput from '../components/TagInput'
 
+const MIN_AGE = parseInt(import.meta.env.VITE_MEMBER_MIN_AGE ?? '17', 10)
+const maxBirthdateStr = (() => {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() - MIN_AGE)
+  return d.toISOString().split('T')[0]
+})()
+
 export default function RegisterPage() {
   const { token } = useParams()
   const navigate = useNavigate()
@@ -39,6 +46,17 @@ export default function RegisterPage() {
     if (form.password !== form.confirm_password) {
       setFieldErrors({ confirm_password: 'Passwords do not match' })
       return
+    }
+    if (form.birthdate) {
+      const birthDate = new Date(form.birthdate)
+      const today = new Date()
+      let age = today.getFullYear() - birthDate.getFullYear()
+      const m = today.getMonth() - birthDate.getMonth()
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--
+      if (age < MIN_AGE) {
+        setFieldErrors({ birthdate: `You must be at least ${MIN_AGE} years old` })
+        return
+      }
     }
     setLoading(true)
     try {
@@ -101,9 +119,10 @@ export default function RegisterPage() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Birthdate *</label>
-            <input type="date" required value={form.birthdate}
+            <input type="date" required max={maxBirthdateStr} value={form.birthdate}
               onChange={(e) => setForm({ ...form, birthdate: e.target.value })}
               className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            {fieldErrors.birthdate && <p className="text-xs text-red-500 mt-1">{fieldErrors.birthdate}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>

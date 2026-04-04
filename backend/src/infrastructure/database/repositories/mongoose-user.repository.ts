@@ -13,18 +13,18 @@ export class MongooseUserRepository implements UserRepository {
   ) {}
 
   async findByUsername(username: string): Promise<User | null> {
-    const doc = await this.model.findOne({ username, deleted_at: null }).lean();
+    const doc = await this.model.findOne({ username, status: { $ne: 'inactive' } }).lean();
     return doc ? this.toEntity(doc) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const doc = await this.model.findOne({ email, deleted_at: null }).lean();
+    const doc = await this.model.findOne({ email, status: { $ne: 'inactive' } }).lean();
     return doc ? this.toEntity(doc) : null;
   }
 
   async findByPasswordResetToken(token: string): Promise<User | null> {
     const doc = await this.model
-      .findOne({ password_reset_token: token, deleted_at: null })
+      .findOne({ password_reset_token: token, status: { $ne: 'inactive' } })
       .lean();
     return doc ? this.toEntity(doc) : null;
   }
@@ -35,7 +35,7 @@ export class MongooseUserRepository implements UserRepository {
   }
 
   async findAll({ page = 1, search, status, perPage = 25 }: FindAllParams): Promise<FindAllResult> {
-    const filter: Record<string, unknown> = { deleted_at: null };
+    const filter: Record<string, unknown> = { status: { $ne: 'inactive' } };
 
     if (status) filter.status = status;
     if (search) {

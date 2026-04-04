@@ -25,7 +25,7 @@ A generic web-based membership management application, adaptable for communities
 | Full name | |
 | Photo | JPG/PNG only, max 2MB |
 | Gender | male / female |
-| Birthdate | |
+| Birthdate | Member must be at least 17 years old (configurable via `MEMBER_MIN_AGE` env var, default: 17) |
 | Email | |
 | Phone | |
 | Address | |
@@ -87,10 +87,10 @@ Feature: Login
     When they submit the login form with an incorrect password
     Then they see an error message "Invalid username or password"
 
-  Scenario: Login with inactive account
-    Given a member whose status is inactive
+  Scenario: Login with removed (inactive) account
+    Given a member who has been removed (status inactive)
     When they attempt to log in
-    Then they see an error message "Your account is inactive"
+    Then they see an error message "Invalid username or password"
 ```
 
 ---
@@ -147,6 +147,12 @@ Feature: Invitation-based Registration
     Then my membership status is set to active
     And I can log in to the app
 
+  Scenario: Invitee submits a birthdate below the minimum age
+    Given I have received a valid invitation link
+    When I submit a birthdate that makes me younger than the minimum age
+    Then I see an error "Member must be at least 17 years old"
+    And my registration is not completed
+
   Scenario: Invitee uses an expired invitation link
     Given an invitation link that is older than 1 month
     When I open the link
@@ -196,6 +202,12 @@ Feature: Edit Own Profile
     Given I am editing my profile
     When I enter more than 500 characters in the Notes field
     Then I see an error "Notes cannot exceed 500 characters"
+
+  Scenario: Member submits a birthdate below the minimum age
+    Given I am editing my profile
+    When I enter a birthdate that makes me younger than the minimum age
+    Then I see an error "Member must be at least 17 years old"
+    And my profile is not updated
 
 Feature: Edit Any Member Profile
 
@@ -310,7 +322,7 @@ Feature: Remove Member
   Scenario: Editor removes a member
     Given I am logged in as an Editor or Admin
     When I remove a member
-    Then the member is soft deleted and can no longer log in
+    Then the member status is set to inactive permanently and they can no longer log in
     And their data is retained in the system
 
   Scenario: Member attempts to remove another member

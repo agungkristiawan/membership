@@ -396,7 +396,7 @@ Authorization: Bearer <access_token>
 
 ---
 
-### Delete Member (Soft Delete)
+### Remove Member
 ```
 DELETE /api/v1/members/:id
 ```
@@ -406,7 +406,7 @@ DELETE /api/v1/members/:id
 Authorization: Bearer <access_token>
 ```
 
-> Note: Only Admins and Editors can delete members.
+> Note: Only Admins and Editors can remove members.
 
 **Response `200 OK`**
 ```json

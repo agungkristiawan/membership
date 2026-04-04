@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import AppLayout from '../layouts/AppLayout'
 import Avatar from '../components/Avatar'
 import Toast from '../components/Toast'
+import ConfirmDialog from '../components/ConfirmDialog'
 
 export default function MemberProfilePage() {
   const { id } = useParams()
@@ -14,6 +15,7 @@ export default function MemberProfilePage() {
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState(null)
   const [roleChanging, setRoleChanging] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   const isAdmin = user?.role === 'admin'
   const canEdit = ['admin', 'editor'].includes(user?.role)
@@ -42,7 +44,7 @@ export default function MemberProfilePage() {
   }
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to remove this member?')) return
+    setShowConfirm(false)
     try {
       await deleteMember(id)
       navigate('/members')
@@ -57,6 +59,14 @@ export default function MemberProfilePage() {
   return (
     <AppLayout>
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+      <ConfirmDialog
+        open={showConfirm}
+        title="Remove Member"
+        message={`Are you sure you want to permanently remove ${member?.full_name}? This action cannot be undone.`}
+        confirmLabel="Remove"
+        onConfirm={handleDelete}
+        onCancel={() => setShowConfirm(false)}
+      />
       <div className="mb-4">
         <Link to="/members" className="text-sm text-blue-600 hover:underline">&larr; Back to Members</Link>
       </div>
@@ -68,7 +78,6 @@ export default function MemberProfilePage() {
             <h2 className="text-2xl font-semibold text-gray-800">{member.full_name}</h2>
             <span className={`inline-block mt-1 px-2 py-1 rounded-full text-xs font-medium capitalize
               ${member.status === 'active' ? 'bg-emerald-500 text-white' :
-                member.status === 'inactive' ? 'bg-slate-400 text-white' :
                 'bg-amber-500 text-white'}`}>
               {member.status}
             </span>
@@ -126,7 +135,7 @@ export default function MemberProfilePage() {
             </Link>
           )}
           {canDelete && !isOwnProfile && (
-            <button onClick={handleDelete}
+            <button onClick={() => setShowConfirm(true)}
               className="bg-red-50 text-red-600 px-4 py-2 rounded text-sm font-medium hover:bg-red-100 transition-colors">
               Remove Member
             </button>

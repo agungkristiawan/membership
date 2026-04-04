@@ -19,7 +19,6 @@ const makeUser = (overrides: Partial<User> = {}): User => ({
   join_date: new Date('2024-01-01'),
   created_at: new Date(),
   updated_at: new Date(),
-  deleted_at: null,
   ...overrides,
 });
 
@@ -80,9 +79,8 @@ describe('AuthService', () => {
         .rejects.toThrow(UnauthorizedException);
     });
 
-    it('throws 401 when account is inactive', async () => {
-      userRepo.findByUsername.mockResolvedValue(makeUser({ status: 'inactive' }));
-      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
+    it('throws 401 when account is inactive (excluded by repository)', async () => {
+      userRepo.findByUsername.mockResolvedValue(null);
       await expect(service.login({ username: 'testuser', password: 'pass' }))
         .rejects.toThrow(UnauthorizedException);
     });
@@ -118,9 +116,9 @@ describe('AuthService', () => {
         .rejects.toThrow(UnauthorizedException);
     });
 
-    it('throws 401 when user is deleted', async () => {
+    it('throws 401 when user is inactive', async () => {
       tokenRepo.findByToken.mockResolvedValue(makeToken());
-      userRepo.findById.mockResolvedValue(makeUser({ deleted_at: new Date() }));
+      userRepo.findById.mockResolvedValue(makeUser({ status: 'inactive' }));
       await expect(service.refresh({ refresh_token: 'tok' }))
         .rejects.toThrow(UnauthorizedException);
     });

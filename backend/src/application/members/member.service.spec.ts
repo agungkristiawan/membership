@@ -1,4 +1,4 @@
-import { ForbiddenException, NotFoundException, BadRequestException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException, BadRequestException, UnprocessableEntityException } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { UserRepository } from '../../domain/repositories/user.repository';
 import { User } from '../../domain/entities/user.entity';
@@ -15,7 +15,6 @@ const makeUser = (overrides: Partial<User> = {}): User => ({
   hobbies: [],
   created_at: new Date(),
   updated_at: new Date(),
-  deleted_at: null,
   ...overrides,
 });
 
@@ -75,8 +74,8 @@ describe('MemberService', () => {
       await expect(service.getById('missing')).rejects.toThrow(NotFoundException);
     });
 
-    it('throws 404 when member is soft-deleted', async () => {
-      userRepo.findById.mockResolvedValue(makeUser({ deleted_at: new Date() }));
+    it('throws 404 when member is inactive', async () => {
+      userRepo.findById.mockResolvedValue(makeUser({ status: 'inactive' }));
       await expect(service.getById('user-1')).rejects.toThrow(NotFoundException);
     });
 
@@ -96,8 +95,8 @@ describe('MemberService', () => {
         .rejects.toThrow(NotFoundException);
     });
 
-    it('throws 404 when member is soft-deleted', async () => {
-      userRepo.findById.mockResolvedValue(makeUser({ deleted_at: new Date() }));
+    it('throws 404 when member is inactive', async () => {
+      userRepo.findById.mockResolvedValue(makeUser({ status: 'inactive' }));
       await expect(service.update('user-1', {}, 'admin-1', 'admin'))
         .rejects.toThrow(NotFoundException);
     });
@@ -133,9 +132,27 @@ describe('MemberService', () => {
     it('allows admin to change status', async () => {
       userRepo.findById.mockResolvedValue(makeUser());
       userRepo.updateById.mockResolvedValue(makeUser());
-      await service.update('user-1', { status: 'inactive' }, 'admin-1', 'admin');
+      await service.update('user-1', { status: 'pending' }, 'admin-1', 'admin');
       const updateCall = userRepo.updateById.mock.calls[0][1] as Record<string, unknown>;
-      expect(updateCall.status).toBe('inactive');
+      expect(updateCall.status).toBe('pending');
+    });
+
+    it('throws 422 when birthdate makes member younger than minimum age', async () => {
+      userRepo.findById.mockResolvedValue(makeUser());
+      const tooYoung = new Date();
+      tooYoung.setFullYear(tooYoung.getFullYear() - 16);
+      await expect(
+        service.update('user-1', { birthdate: tooYoung.toISOString().split('T')[0] }, 'user-1', 'member'),
+      ).rejects.toThrow(UnprocessableEntityException);
+    });
+
+    it('accepts birthdate for member exactly at minimum age', async () => {
+      userRepo.findById.mockResolvedValue(makeUser());
+      userRepo.updateById.mockResolvedValue(makeUser());
+      const exactAge = new Date();
+      exactAge.setFullYear(exactAge.getFullYear() - 17);
+      const result = await service.update('user-1', { birthdate: exactAge.toISOString().split('T')[0] }, 'user-1', 'member');
+      expect(result.message).toBe('Member updated successfully');
     });
   });
 
@@ -151,8 +168,8 @@ describe('MemberService', () => {
         .rejects.toThrow(NotFoundException);
     });
 
-    it('throws 404 when member is soft-deleted', async () => {
-      userRepo.findById.mockResolvedValue(makeUser({ deleted_at: new Date() }));
+    it('throws 404 when member is inactive', async () => {
+      userRepo.findById.mockResolvedValue(makeUser({ status: 'inactive' }));
       await expect(service.updateRole('user-1', 'editor', 'admin-1'))
         .rejects.toThrow(NotFoundException);
     });
@@ -215,20 +232,20 @@ describe('MemberService', () => {
         .rejects.toThrow(NotFoundException);
     });
 
-    it('throws 404 when member already deleted', async () => {
-      userRepo.findById.mockResolvedValue(makeUser({ deleted_at: new Date() }));
+    it('throws 404 when member already removed', async () => {
+      userRepo.findById.mockResolvedValue(makeUser({ status: 'inactive' }));
       await expect(service.delete('user-1', 'admin-1', 'admin'))
         .rejects.toThrow(NotFoundException);
     });
 
-    it('sets deleted_at and returns success message', async () => {
+    it('sets status to inactive and returns success message', async () => {
       userRepo.findById.mockResolvedValue(makeUser());
       userRepo.updateById.mockResolvedValue(makeUser());
       const result = await service.delete('user-1', 'admin-1', 'admin');
       expect(result.message).toBe('Member removed successfully');
       expect(userRepo.updateById).toHaveBeenCalledWith(
         'user-1',
-        expect.objectContaining({ deleted_at: expect.any(Date) }),
+        expect.objectContaining({ status: 'inactive' }),
       );
     });
 

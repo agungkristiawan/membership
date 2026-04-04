@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { UserRepository } from '../../domain/repositories/user.repository';
 import { ListMembersQueryDto } from './dto/list-members-query.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
@@ -52,7 +52,7 @@ export class MemberService {
     requesterRole: string,
   ) {
     const user = await this.userRepository.findById(id);
-    if (!user || user.deleted_at) throw new NotFoundException('Member not found');
+    if (!user || user.status === 'inactive') throw new NotFoundException('Member not found');
 
     const canEditAny = ['admin', 'editor'].includes(requesterRole);
     const isOwn = requesterId === id;
@@ -69,7 +69,21 @@ export class MemberService {
       notes: dto.notes,
     };
 
-    if (dto.birthdate) updateData.birthdate = new Date(dto.birthdate);
+    if (dto.birthdate) {
+      const minAge = parseInt(process.env.MEMBER_MIN_AGE ?? '17', 10);
+      const birthDate = new Date(dto.birthdate);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+      if (age < minAge) {
+        throw new UnprocessableEntityException({
+          message: 'Validation error',
+          errors: { birthdate: `Member must be at least ${minAge} years old` },
+        });
+      }
+      updateData.birthdate = new Date(dto.birthdate);
+    }
     if (canEditAny && dto.status) updateData.status = dto.status;
 
     // Remove undefined fields
@@ -84,7 +98,7 @@ export class MemberService {
       throw new ForbiddenException('You cannot change your own role');
     }
     const user = await this.userRepository.findById(id);
-    if (!user || user.deleted_at) throw new NotFoundException('Member not found');
+    if (!user || user.status === 'inactive') throw new NotFoundException('Member not found');
 
     if (role === 'admin' && user.role !== 'admin') {
       const { data: allUsers } = await this.userRepository.findAll({ perPage: 999 });
@@ -106,8 +120,8 @@ export class MemberService {
       throw new ForbiddenException('You do not have permission to remove members');
     }
     const user = await this.userRepository.findById(id);
-    if (!user || user.deleted_at) throw new NotFoundException('Member not found');
-    await this.userRepository.updateById(id, { deleted_at: new Date() } as never);
+    if (!user || user.status === 'inactive') throw new NotFoundException('Member not found');
+    await this.userRepository.updateById(id, { status: 'inactive' } as never);
     return { message: 'Member removed successfully' };
   }
 
@@ -119,7 +133,7 @@ export class MemberService {
   async getById(id: string) {
     const user = await this.userRepository.findById(id);
 
-    if (!user || user.deleted_at) {
+    if (!user || user.status === 'inactive') {
       throw new NotFoundException('Member not found');
     }
 

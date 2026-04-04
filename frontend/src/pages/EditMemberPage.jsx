@@ -7,6 +7,13 @@ import Avatar from '../components/Avatar'
 import TagInput from '../components/TagInput'
 import Toast from '../components/Toast'
 
+const MIN_AGE = parseInt(import.meta.env.VITE_MEMBER_MIN_AGE ?? '17', 10)
+const maxBirthdateStr = (() => {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() - MIN_AGE)
+  return d.toISOString().split('T')[0]
+})()
+
 export default function EditMemberPage() {
   const params = useParams()
   const { user } = useAuth()
@@ -62,6 +69,17 @@ export default function EditMemberPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrors({})
+    if (form.birthdate) {
+      const birthDate = new Date(form.birthdate)
+      const today = new Date()
+      let age = today.getFullYear() - birthDate.getFullYear()
+      const m = today.getMonth() - birthDate.getMonth()
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--
+      if (age < MIN_AGE) {
+        setErrors({ birthdate: `Member must be at least ${MIN_AGE} years old` })
+        return
+      }
+    }
     setLoading(true)
     try {
       await updateMember(id, {
@@ -120,9 +138,10 @@ export default function EditMemberPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Birthdate</label>
-              <input type="date" value={form.birthdate}
+              <input type="date" max={maxBirthdateStr} value={form.birthdate}
                 onChange={(e) => setForm({ ...form, birthdate: e.target.value })}
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              {errors.birthdate && <p className="text-xs text-red-500 mt-1">{errors.birthdate}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
@@ -145,7 +164,6 @@ export default function EditMemberPage() {
               <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
                 <option value="pending">Pending</option>
               </select>
             </div>

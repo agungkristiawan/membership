@@ -12,8 +12,8 @@ export class ListMembersQueryDto {
   @IsOptional()
   search?: string;
 
-  @ApiPropertyOptional({ enum: ['active', 'inactive', 'pending'] })
-  @IsIn(['active', 'inactive', 'pending'])
+  @ApiPropertyOptional({ enum: ['active', 'pending'] })
+  @IsIn(['active', 'pending'])
   @IsOptional()
   status?: string;
 }
