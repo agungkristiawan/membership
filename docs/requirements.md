@@ -153,6 +153,24 @@ Feature: Invitation-based Registration
     Then I see an error "Member must be at least 17 years old"
     And my registration is not completed
 
+  Scenario: Admin generates an invitation for an email that already belongs to an active member
+    Given I am logged in as an Admin or Editor
+    When I generate an invitation for an email already in use by an active or pending member
+    Then I see an error "A member with this email already exists"
+    And no invitation is created
+
+  Scenario: Admin generates an invitation for an email that belonged to a removed member
+    Given I am logged in as an Admin or Editor
+    And a member with this email was previously removed
+    When I generate an invitation for that email
+    Then the invitation is created successfully
+
+  Scenario: Invitee registers but email was taken in the meantime
+    Given I have received a valid invitation link
+    And another member with the same email was registered after the invitation was created
+    When I complete my registration
+    Then I see an error "A member with this email already exists"
+
   Scenario: Invitee uses an expired invitation link
     Given an invitation link that is older than 1 month
     When I open the link

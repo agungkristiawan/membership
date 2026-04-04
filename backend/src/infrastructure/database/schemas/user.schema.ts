@@ -14,7 +14,7 @@ export class UserSchemaClass {
   @Prop({ required: true })
   full_name: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   email: string;
 
   @Prop()
@@ -58,3 +58,7 @@ export class UserSchemaClass {
 export const UserSchema = SchemaFactory.createForClass(UserSchemaClass);
 
 UserSchema.index({ status: 1 });
+UserSchema.index(
+  { email: 1 },
+  { unique: true, partialFilterExpression: { status: { $in: ['active', 'pending'] } } },
+);

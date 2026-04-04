@@ -89,7 +89,26 @@ describe('InvitationService', () => {
       ).rejects.toThrow(ForbiddenException);
     });
 
+    it('throws 422 when email belongs to an existing active/pending member', async () => {
+      userRepo.findByEmail.mockResolvedValue(makeUser());
+      await expect(
+        service.generate({ email: 'invitee@example.com', full_name: 'X' }, 'admin-1', 'admin'),
+      ).rejects.toThrow(UnprocessableEntityException);
+    });
+
+    it('allows invitation when email belongs to an inactive (removed) member', async () => {
+      userRepo.findByEmail.mockResolvedValue(null);
+      invitationRepo.create.mockResolvedValue(makeInvitation());
+      const result = await service.generate(
+        { email: 'removed@example.com', full_name: 'X' },
+        'admin-1',
+        'admin',
+      );
+      expect(result.invitation_link).toBeDefined();
+    });
+
     it('creates invitation and returns link for admin', async () => {
+      userRepo.findByEmail.mockResolvedValue(null);
       invitationRepo.create.mockResolvedValue(makeInvitation());
       const result = await service.generate(
         { email: 'x@x.com', full_name: 'X' },
@@ -101,6 +120,7 @@ describe('InvitationService', () => {
     });
 
     it('creates invitation and returns link for editor', async () => {
+      userRepo.findByEmail.mockResolvedValue(null);
       invitationRepo.create.mockResolvedValue(makeInvitation());
       const result = await service.generate(
         { email: 'x@x.com', full_name: 'X' },
@@ -172,9 +192,19 @@ describe('InvitationService', () => {
       );
     });
 
+    it('throws 422 when email already belongs to an active/pending member', async () => {
+      invitationRepo.findByToken.mockResolvedValue(makeInvitation());
+      userRepo.findByUsername.mockResolvedValue(null);
+      userRepo.findByEmail.mockResolvedValue(makeUser());
+      await expect(service.register('valid-token', dto)).rejects.toThrow(
+        UnprocessableEntityException,
+      );
+    });
+
     it('throws 422 when birthdate makes member younger than minimum age', async () => {
       invitationRepo.findByToken.mockResolvedValue(makeInvitation());
       userRepo.findByUsername.mockResolvedValue(null);
+      userRepo.findByEmail.mockResolvedValue(null);
       const tooYoung = new Date();
       tooYoung.setFullYear(tooYoung.getFullYear() - 16);
       const youngDto = { ...dto, birthdate: tooYoung.toISOString().split('T')[0] };
@@ -186,6 +216,7 @@ describe('InvitationService', () => {
     it('accepts birthdate for member exactly at minimum age', async () => {
       invitationRepo.findByToken.mockResolvedValue(makeInvitation());
       userRepo.findByUsername.mockResolvedValue(null);
+      userRepo.findByEmail.mockResolvedValue(null);
       userRepo.create.mockResolvedValue(makeUser());
       const exactAge = new Date();
       exactAge.setFullYear(exactAge.getFullYear() - 17);
@@ -197,6 +228,7 @@ describe('InvitationService', () => {
     it('creates user with status=active and marks invitation used', async () => {
       invitationRepo.findByToken.mockResolvedValue(makeInvitation());
       userRepo.findByUsername.mockResolvedValue(null);
+      userRepo.findByEmail.mockResolvedValue(null);
       userRepo.create.mockResolvedValue(makeUser());
 
       await service.register('valid-token', dto);
@@ -210,6 +242,7 @@ describe('InvitationService', () => {
     it('returns auth tokens after successful registration', async () => {
       invitationRepo.findByToken.mockResolvedValue(makeInvitation());
       userRepo.findByUsername.mockResolvedValue(null);
+      userRepo.findByEmail.mockResolvedValue(null);
       userRepo.create.mockResolvedValue(makeUser());
 
       const result = await service.register('valid-token', dto);

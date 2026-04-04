@@ -7,18 +7,21 @@ export default function InviteMemberPage() {
   const [form, setForm] = useState({ full_name: '', email: '' })
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setFieldErrors({})
     setLoading(true)
     try {
       const { data } = await generateInvitation(form)
       setResult(data)
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to generate invitation')
+      if (err.response?.data?.errors) setFieldErrors(err.response.data.errors)
+      else setError(err.response?.data?.message || 'Failed to generate invitation')
     } finally {
       setLoading(false)
     }
@@ -50,6 +53,7 @@ export default function InviteMemberPage() {
             <input type="email" required value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            {fieldErrors.email && <p className="text-xs text-red-500 mt-1">{fieldErrors.email}</p>}
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button type="submit" disabled={loading}

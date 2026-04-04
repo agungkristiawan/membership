@@ -513,6 +513,16 @@ Authorization: Bearer <access_token>
 }
 ```
 
+**Response `422 Unprocessable Entity`**
+```json
+{
+  "message": "Validation error",
+  "errors": {
+    "email": "A member with this email already exists"
+  }
+}
+```
+
 **Response `403 Forbidden`**
 ```json
 {
@@ -610,6 +620,16 @@ POST /api/v1/invitations/:token/register
   "message": "Validation error",
   "errors": {
     "birthdate": "Member must be at least 17 years old"
+  }
+}
+```
+
+**Response `422 Unprocessable Entity`**
+```json
+{
+  "message": "Validation error",
+  "errors": {
+    "email": "A member with this email already exists"
   }
 }
 ```

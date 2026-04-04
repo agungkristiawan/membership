@@ -32,6 +32,14 @@ export class InvitationService {
       throw new ForbiddenException('You do not have permission to generate invitation links');
     }
 
+    const existingUser = await this.userRepository.findByEmail(dto.email);
+    if (existingUser) {
+      throw new UnprocessableEntityException({
+        message: 'Validation error',
+        errors: { email: 'A member with this email already exists' },
+      });
+    }
+
     const token = crypto.randomBytes(32).toString('hex');
     const expiresAt = new Date();
     expiresAt.setMonth(expiresAt.getMonth() + 1);
@@ -85,6 +93,14 @@ export class InvitationService {
       throw new UnprocessableEntityException({
         message: 'Validation error',
         errors: { username: 'Username already taken' },
+      });
+    }
+
+    const existingEmail = await this.userRepository.findByEmail(invitation.email);
+    if (existingEmail) {
+      throw new UnprocessableEntityException({
+        message: 'Validation error',
+        errors: { email: 'A member with this email already exists' },
       });
     }
 
