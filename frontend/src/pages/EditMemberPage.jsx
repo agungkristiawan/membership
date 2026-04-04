@@ -86,7 +86,7 @@ export default function EditMemberPage() {
         <Link to={`/members/${id}`} className="text-sm text-blue-600 hover:underline">&larr; Back to Profile</Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 max-w-2xl">
+      <div className="bg-slate-100 rounded-lg shadow p-6 max-w-2xl border-t-4 border-indigo-500">
         <h2 className="text-xl font-semibold text-gray-800 mb-6">Edit Profile</h2>
 
         <div className="flex items-center gap-4 mb-6">
@@ -167,7 +167,7 @@ export default function EditMemberPage() {
 
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={loading}
-              className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors">
+              className="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors">
               {loading ? 'Saving...' : 'Save Changes'}
             </button>
             <Link to={`/members/${id}`}

@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 const BASE = 'http://localhost:5173';
 
-async function login(page, username = 'admin', password = 'admin123') {
+async function login(page, username = 'admin', password = 'beruk123') {
   await page.goto(`${BASE}/login`);
   await page.fill('input[type="text"]', username);
   await page.fill('input[type="password"]', password);

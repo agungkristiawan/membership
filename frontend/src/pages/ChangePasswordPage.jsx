@@ -37,7 +37,7 @@ export default function ChangePasswordPage() {
         <Link to="/profile" className="text-sm text-blue-600 hover:underline">&larr; Back to Profile</Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 max-w-md">
+      <div className="bg-slate-100 rounded-lg shadow p-6 max-w-md border-t-4 border-indigo-500">
         <h2 className="text-xl font-semibold text-gray-800 mb-6">Change Password</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -61,7 +61,7 @@ export default function ChangePasswordPage() {
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={loading}
-              className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors">
+              className="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors">
               {loading ? 'Saving...' : 'Save Password'}
             </button>
             <Link to="/profile"

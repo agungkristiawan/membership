@@ -22,9 +22,9 @@ export default function AppLayout({ children }) {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-56 bg-white border-r border-gray-200 flex flex-col">
-        <div className="px-6 py-5 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-blue-600">MemberHub</h1>
+      <aside className="w-56 bg-gradient-to-b from-slate-900 to-indigo-900 flex flex-col">
+        <div className="px-6 py-5 border-b border-white/10">
+          <h1 className="text-xl font-bold text-white">MemberHub</h1>
         </div>
         <nav className="flex-1 py-4">
           {visibleNav.map((item) => (
@@ -33,8 +33,8 @@ export default function AppLayout({ children }) {
               to={item.path}
               className={`block px-6 py-3 text-sm font-medium transition-colors ${
                 location.pathname.startsWith(item.path)
-                  ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-white/20 text-white border-r-2 border-white'
+                  : 'text-slate-300 hover:bg-white/10 hover:text-white'
               }`}
             >
               {item.label}
@@ -46,7 +46,7 @@ export default function AppLayout({ children }) {
       {/* Main */}
       <div className="flex-1 flex flex-col">
         {/* Top bar */}
-        <header className="bg-white border-b border-gray-200 px-6 py-3 flex justify-end items-center gap-3">
+        <header className="bg-[rgb(224,231,255)] border-b border-[rgb(207,214,250)] px-6 py-3 flex justify-end items-center gap-3">
           <Link to="/profile" className="flex items-center gap-2 hover:opacity-80">
             <Avatar src={user?.photo_url} name={user?.full_name} size="sm" />
             <span className="text-sm font-medium text-gray-700">{user?.full_name}</span>

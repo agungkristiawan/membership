@@ -36,7 +36,7 @@ export default function InviteMemberPage() {
         <Link to="/members" className="text-sm text-blue-600 hover:underline">&larr; Back to Members</Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 max-w-lg">
+      <div className="bg-slate-100 rounded-lg shadow p-6 max-w-lg border-t-4 border-indigo-500">
         <h2 className="text-xl font-semibold text-gray-800 mb-6">Invite New Member</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -53,7 +53,7 @@ export default function InviteMemberPage() {
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button type="submit" disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors">
+            className="w-full bg-indigo-600 text-white py-2 rounded font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors">
             {loading ? 'Generating...' : 'Generate Invitation Link'}
           </button>
         </form>

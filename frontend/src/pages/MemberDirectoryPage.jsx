@@ -46,7 +46,7 @@ export default function MemberDirectoryPage() {
         <h2 className="text-xl font-semibold text-gray-800">Members</h2>
         {canInvite && (
           <Link to="/members/invite"
-            className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 transition-colors">
+            className="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-indigo-700 transition-colors">
             + Invite Member
           </Link>
         )}
@@ -79,13 +79,13 @@ export default function MemberDirectoryPage() {
         <p className="text-center text-gray-500 py-8">No members found</p>
       ) : (
         <>
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-slate-100 rounded-lg shadow overflow-hidden border-t-4 border-indigo-500">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-indigo-600">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Member</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Email</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-200">Member</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-200">Email</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-200">Status</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
@@ -101,9 +101,9 @@ export default function MemberDirectoryPage() {
                     <td className="px-4 py-3 text-gray-600">{m.email}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize
-                        ${m.status === 'active' ? 'bg-green-100 text-green-700' :
-                          m.status === 'inactive' ? 'bg-gray-100 text-gray-600' :
-                          'bg-yellow-100 text-yellow-700'}`}>
+                        ${m.status === 'active' ? 'bg-emerald-500 text-white' :
+                          m.status === 'inactive' ? 'bg-slate-400 text-white' :
+                          'bg-amber-500 text-white'}`}>
                         {m.status}
                       </span>
                     </td>

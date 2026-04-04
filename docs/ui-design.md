@@ -6,7 +6,15 @@
 - **Sidebar**: Collapsible, shows icons + labels
 - **Top bar**: App name/logo on the left, user avatar + name + logout on the right
 - **Responsive**: Sidebar collapses to icon-only on smaller screens
-- **Color scheme**: To be decided during implementation
+- **Color scheme**: Indigo/slate theme
+  - Sidebar: dark gradient `from-slate-900 to-indigo-900`, white text, `bg-white/20` active state
+  - Top bar: periwinkle wash `rgb(224,231,255)`
+  - Auth pages: diagonal gradient `from-indigo-600 via-purple-500 to-pink-500`
+  - Cards: `bg-slate-100` with `border-t-4 border-indigo-500` accent
+  - Table headers: `bg-indigo-600` with `text-slate-200`
+  - Primary buttons: `bg-indigo-600 hover:bg-indigo-700`
+  - Status badges: solid — active `bg-emerald-500`, inactive `bg-slate-400`, pending `bg-amber-500`
+  - Avatars: color-coded by name hash across 8 distinct colors (indigo, emerald, rose, amber, violet, teal, orange, sky)
 
 ---
 

@@ -20,15 +20,15 @@ export default function MyProfilePage() {
 
   return (
     <AppLayout>
-      <div className="bg-white rounded-lg shadow p-6 max-w-2xl">
+      <div className="bg-slate-100 rounded-lg shadow p-6 max-w-2xl border-t-4 border-indigo-500">
         <div className="flex items-start gap-6 mb-6">
           <Avatar src={member.photo_url} name={member.full_name} size="lg" />
           <div>
             <h2 className="text-2xl font-semibold text-gray-800">{member.full_name}</h2>
             <span className={`inline-block mt-1 px-2 py-1 rounded-full text-xs font-medium capitalize
-              ${member.status === 'active' ? 'bg-green-100 text-green-700' :
-                member.status === 'inactive' ? 'bg-gray-100 text-gray-600' :
-                'bg-yellow-100 text-yellow-700'}`}>
+              ${member.status === 'active' ? 'bg-emerald-500 text-white' :
+                member.status === 'inactive' ? 'bg-slate-400 text-white' :
+                'bg-amber-500 text-white'}`}>
               {member.status}
             </span>
             <p className="text-sm text-gray-500 mt-1">
@@ -60,7 +60,7 @@ export default function MyProfilePage() {
 
         <div className="flex gap-3 mt-6">
           <Link to="/profile/edit"
-            className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 transition-colors">
+            className="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-indigo-700 transition-colors">
             Edit Profile
           </Link>
           <Link to="/profile/change-password"

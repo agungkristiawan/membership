@@ -65,7 +65,7 @@ export default function UserManagementPage() {
 
       {resetLink && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full mx-4">
+          <div className="bg-slate-100 rounded-lg shadow-lg p-6 max-w-lg w-full mx-4 border-t-4 border-indigo-500">
             <h3 className="text-base font-semibold text-gray-800 mb-2">Password Reset Link</h3>
             <p className="text-sm text-gray-500 mb-3">Share this link with the user. It expires in 1 hour.</p>
             <div className="flex gap-2">
@@ -101,14 +101,14 @@ export default function UserManagementPage() {
         <p className="text-center text-gray-500 py-8">Loading...</p>
       ) : (
         <>
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-slate-100 rounded-lg shadow overflow-hidden border-t-4 border-indigo-500">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-indigo-600">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Member</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Email</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Role</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Actions</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-200">Member</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-200">Email</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-200">Role</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-200">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
