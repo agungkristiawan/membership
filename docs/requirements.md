@@ -30,7 +30,7 @@ A generic web-based membership management application, adaptable for communities
 | Phone | |
 | Address | |
 | Join date | |
-| Membership status | active / inactive / pending |
+| Membership status | active / pending (inactive is set only by Remove Member action) |
 | Hobbies | free-text, multiple values |
 | Notes | max 500 characters |
 

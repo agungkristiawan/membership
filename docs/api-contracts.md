@@ -280,7 +280,7 @@ Authorization: Bearer <access_token>
 |---|---|---|---|
 | page | integer | No | Page number, defaults to 1 |
 | search | string | No | Search by name or email |
-| status | string | No | Filter by status: active / inactive / pending |
+| status | string | No | Filter by status: active / pending |
 
 **Response `200 OK`**
 ```json
@@ -293,7 +293,7 @@ Authorization: Bearer <access_token>
       "gender": "male | female",
       "email": "string",
       "phone": "string",
-      "status": "active | inactive | pending"
+      "status": "active | pending"
     }
   ],
   "pagination": {
@@ -329,7 +329,7 @@ Authorization: Bearer <access_token>
   "phone": "string",
   "address": "string",
   "join_date": "YYYY-MM-DD",
-  "status": "active | inactive | pending",
+  "status": "active | pending",
   "hobbies": ["string"],
   "notes": "string"
 }
@@ -383,6 +383,16 @@ Authorization: Bearer <access_token>
   "message": "Validation error",
   "errors": {
     "notes": "Notes cannot exceed 500 characters"
+  }
+}
+```
+
+**Response `422 Unprocessable Entity`**
+```json
+{
+  "message": "Validation error",
+  "errors": {
+    "birthdate": "Member must be at least 17 years old"
   }
 }
 ```
@@ -584,12 +594,22 @@ POST /api/v1/invitations/:token/register
 }
 ```
 
-**Response `400 Bad Request`**
+**Response `422 Unprocessable Entity`**
 ```json
 {
   "message": "Validation error",
   "errors": {
     "username": "Username already taken"
+  }
+}
+```
+
+**Response `422 Unprocessable Entity`**
+```json
+{
+  "message": "Validation error",
+  "errors": {
+    "birthdate": "Member must be at least 17 years old"
   }
 }
 ```
