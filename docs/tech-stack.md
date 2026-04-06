@@ -22,7 +22,7 @@
 | Auth | JWT access tokens (1h) + rotating refresh tokens (7d, SHA-256 hashed) |
 | Password hashing | bcrypt |
 | Validation | class-validator + class-transformer (global ValidationPipe) |
-| File uploads | Multer (disk storage, `uploads/` directory, served as static files) |
+| File uploads | Multer + Cloudinary (`multer-storage-cloudinary`) — photos stored in Cloudinary, URLs stored in DB |
 | API Documentation | Swagger UI via `@nestjs/swagger` — available at `http://localhost:3000/api/docs` |
 
 ---
@@ -39,7 +39,18 @@
 
 ## File Storage (profile photos)
 
-Photos are stored on local disk in the `backend/uploads/` directory and served as static files at `/uploads/<filename>`. The `photo_url` field is stored as a relative path in the database and resolved to an absolute URL (prefixed with `BACKEND_URL`) in all API responses.
+Photos are uploaded to Cloudinary (`membership-photos` folder) via `multer-storage-cloudinary`. The `photo_url` field stores the full Cloudinary URL (e.g., `https://res.cloudinary.com/...`) directly in the database. The `resolvePhotoUrl` helper also handles legacy `/uploads/...` paths by prepending `BACKEND_URL`.
+
+---
+
+## Deployment
+
+| Concern | Decision |
+|---|---|
+| Frontend hosting | Vercel (free tier) |
+| Backend hosting | Render (free web service) |
+| Database | MongoDB Atlas M0 (free, 512MB) |
+| Photo storage | Cloudinary (free, 25 credits/mo) |
 
 ---
 
@@ -51,7 +62,10 @@ Photos are stored on local disk in the `backend/uploads/` directory and served a
 | `JWT_SECRET` | — | Secret key for signing JWTs |
 | `JWT_ACCESS_EXPIRATION` | `3600` | Access token expiry in seconds |
 | `JWT_REFRESH_EXPIRATION_DAYS` | `7` | Refresh token expiry in days |
-| `BACKEND_URL` | `http://localhost:3000` | Used to resolve absolute photo URLs |
-| `FRONTEND_URL` | `http://localhost:5173` | Used to build invitation and reset links |
+| `BACKEND_URL` | `http://localhost:3000` | Used to resolve legacy photo URLs |
+| `FRONTEND_URL` | `http://localhost:5173` | Used for CORS and building invitation/reset links |
 | `SEED_ADMIN_PASSWORD` | `admin123` | Initial admin password set by seed script |
 | `PORT` | `3000` | Backend server port |
+| `CLOUDINARY_CLOUD_NAME` | — | Cloudinary account cloud name |
+| `CLOUDINARY_API_KEY` | — | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | — | Cloudinary API secret |

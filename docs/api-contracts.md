@@ -17,6 +17,25 @@
 
 ---
 
+## Health Check
+
+### Health Check
+```
+GET /api/v1/health
+```
+
+> Note: Public endpoint, no authentication required. Used by Render for uptime monitoring.
+
+**Response `200 OK`**
+```json
+{
+  "status": "ok",
+  "timestamp": "ISO8601 datetime"
+}
+```
+
+---
+
 ## Authentication
 
 ### Login
