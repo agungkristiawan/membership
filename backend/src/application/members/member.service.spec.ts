@@ -258,11 +258,18 @@ describe('MemberService', () => {
   });
 
   describe('updatePhoto', () => {
-    it('returns absolute photo_url after update', async () => {
+    it('returns absolute photo_url for legacy /uploads/ path', async () => {
       process.env.BACKEND_URL = 'http://localhost:3000';
       userRepo.updateById.mockResolvedValue(makeUser());
       const result = await service.updatePhoto('user-1', '/uploads/photo.jpg');
       expect(result.photo_url).toBe('http://localhost:3000/uploads/photo.jpg');
+    });
+
+    it('returns Cloudinary URL as-is', async () => {
+      userRepo.updateById.mockResolvedValue(makeUser());
+      const cloudinaryUrl = 'https://res.cloudinary.com/demo/image/upload/membership-photos/photo.jpg';
+      const result = await service.updatePhoto('user-1', cloudinaryUrl);
+      expect(result.photo_url).toBe(cloudinaryUrl);
     });
   });
 });

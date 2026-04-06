@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Git Commit Rules
+
+- Do NOT include any AI agent or Claude Code attribution in commit messages (no `Co-Authored-By: Claude`, no `Generated with Claude Code`, etc.)
+- Commit messages should read as if written by the developer
+
 ## Project Overview
 
 A membership management web app (e.g., alumni associations, church groups) with role-based access (Admin, Editor, Member).
