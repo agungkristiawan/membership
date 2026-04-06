@@ -16,8 +16,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { diskStorage } from 'multer';
-import { extname, join } from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { MemberService } from '../../application/members/member.service';
 import { ListMembersQueryDto } from '../../application/members/dto/list-members-query.dto';
 import { UpdateMemberDto } from '../../application/members/dto/update-member.dto';
@@ -26,12 +26,13 @@ import { JwtAuthGuard } from '../../infrastructure/auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../../infrastructure/auth/decorators/current-user.decorator';
 import { AuthenticatedUser } from '../../infrastructure/auth/strategies/jwt.strategy';
 
-const photoStorage = diskStorage({
-  destination: join(process.cwd(), 'uploads'),
-  filename: (_req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${unique}${extname(file.originalname)}`);
-  },
+const photoStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'membership-photos',
+    allowed_formats: ['jpg', 'png'],
+    transformation: [{ width: 400, height: 400, crop: 'limit' }],
+  } as any,
 });
 
 @ApiTags('Members')
@@ -119,7 +120,7 @@ export class MembersController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) throw new BadRequestException('No file uploaded');
-    const photoUrl = `/uploads/${file.filename}`;
+    const photoUrl = file.path;
     return this.memberService.updatePhoto(id, photoUrl);
   }
 }
